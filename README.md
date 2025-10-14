@@ -17,7 +17,7 @@ Init Values:    1 1 1 1 ? 1 0 1 0 1
 
 ![assets/example_run.gif](assets/example_run.gif)
 
-See [start.ts](src/nodes/start.ts) for the details
+See [start.ts](src/start.ts) for the details
 
 ---
 
