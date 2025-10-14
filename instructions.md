@@ -29,8 +29,6 @@ This should allow you to pass the first two tests ("Project is setup correctly")
 
 ## 2. Implement the algorithm
 
-For this step you will need to make use of the ressources provided in the `README.md` file in order to implement a working version of the Ben-Or consensus algorithm.
-
 There are a few constraints you should keep in mind to validate the different tests:
 
 - Nodes listen to request on the port defined by `BASE_NODE_PORT` + nodeId, which for the basic configuration, means that node #0 will have the port 3000, #1 the port 3001, etc,
@@ -38,11 +36,3 @@ There are a few constraints you should keep in mind to validate the different te
 - Nodes communicate through POST HTTP request with the `/message` route which you should implement,
 - Nodes should start the algorithm when they receive a GET HTTP request to the `/start` route,
 - if the `/stop` GET HTTP route is called on a node, it should stop any activity (this is to prevent any errors in the tests),
-
-## 3. Hidden tests
-
-Some tests only have titles, others don't even have a description and are hidden.
-
-To get the grade of 20/20, you will need to pass all tests (including hidden tests). 
-
-To pass all tests, you should follow the instructions precisely and think about edge cases.s
