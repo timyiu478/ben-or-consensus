@@ -15,7 +15,7 @@ Nodes:          F F F F H H H H H H
 Init Values:    1 1 1 1 ? 1 0 1 0 1
 ```
 
-
+![assets/example_run.gif](assets/example_run.gif)
 
 See [start.ts](src/nodes/start.ts) for the details
 
