@@ -4,6 +4,23 @@ The Ben-Or consensus algorithm is making use of **randomness** to create consens
 
 ---
 
+## Example Run
+
+Example Configuration:
+
+```
+H: Non-Faulty
+F: Faulty
+Nodes:          F F F F H H H H H H
+Init Values:    1 1 1 1 ? 1 0 1 0 1
+```
+
+
+
+See [start.ts](src/nodes/start.ts) for the details
+
+---
+
 ## How to test the code 
 
 1. Run the unit tests with the command `yarn test` and see how the implementation performs against the given tests
@@ -44,3 +61,16 @@ Cons:
 1. Performance is not predictable.
 1. Convergence can still take multiple rounds.
 1. Amount of communication needed is potentially high.
+
+### Assumptions
+
+1. Node Failure Mode: crash-stop start from round 0 
+1. Message sent will eventually be received; No message lost 
+
+### Convention
+
+- Nodes listen to request on the port defined by `BASE_NODE_PORT` + nodeId, which for the basic configuration, means that node #0 will have the port 3000, #1 the port 3001, etc,
+- Nodes always start with an initial state that is provided as a parameter of the `node` function,
+- Nodes communicate through POST HTTP request with the `/message` route which you should implement,
+- Nodes should start the algorithm when they receive a GET HTTP request to the `/start` route,
+- if the `/stop` GET HTTP route is called on a node, it should stop any activity (this is to prevent any errors in the tests),

@@ -13,17 +13,14 @@ type NodeState = {
 };
 
 async function broadcastMessage(message: {x: Value, k: number, phrase: string, senderId: number}, N: number) {
-  const promises = [];
+  // Fire-and-forget, no need to wait for all HTTP requests to complete before proceeding
   for (let i = 0; i < N; i++) {
-    promises.push(
-      fetch(`http://localhost:${BASE_NODE_PORT + i}/message`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({message: message}),
-      })
-    );
+    fetch(`http://localhost:${BASE_NODE_PORT + i}/message`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({message: message}),
+    });
   }
-  await Promise.all(promises);
 }
 
 export async function node(
@@ -69,12 +66,9 @@ export async function node(
   // **This function processes both remote and self-messages**
   async function handleMessage(msg: { k: number, x: Value, phrase: string, senderId: number }) {
     const {k, x, phrase, senderId} = msg;
-    // console.log(`${nodeId} received k:${k}, x:${x}, phrase:${phrase}, senderId:${senderId}`)
+    console.log(`${nodeId} received k:${k}, x:${x}, phrase:${phrase}, senderId:${senderId}`)
 
-
-    if (state.killed || state.decided) return;
-
-    // console.log(`Before update, Node ${nodeId}: k = ${k}, # of proposals ${proposalSenders.get(k)?.size}, # of voteSenders ${voteSenders.get(k)?.size}`)
+    if (state.killed || state.decided || k < state.k!) return;
 
     if (phrase == "propose") {
       if (!proposalSenders.has(k)) proposalSenders.set(k, new Set());
@@ -85,8 +79,7 @@ export async function node(
       if (!proposals.has(k)) proposals.set(k, new Map());
       const map = proposals.get(k)!;
       map.set(x, (map.get(x) ?? 0) + 1);
-    }
-    if (phrase == "vote") {
+    } else if (phrase == "vote") {
       if (!voteSenders.has(k)) voteSenders.set(k, new Set());
       const senders = voteSenders.get(k)!;
       if (senders.has(senderId)) { return; }
@@ -97,8 +90,6 @@ export async function node(
       map.set(x, (map.get(x) ?? 0) + 1);
     }
 
-    // console.log(`After update, Node ${nodeId}: k = ${k}, # of proposals ${proposalSenders.get(k)!.size}, # of voteSenders ${voteSenders.get(k)?.size}`)
-
     // Proposal phase: Once N-F proposals received, move to vote phase
     if (phrase == "propose" && (proposalSenders.get(k)!.size) >= N - F) {
       // Choose value with >N/2 support, or "?" if none
@@ -107,6 +98,7 @@ export async function node(
         if (count > N / 2) { vote = key; break; }
       }
       // Broadcast vote INCLUDING SELF
+      console.log(`Node ${nodeId} is broadcasting vote ${vote}`);
       await broadcastMessage({k: k, x: vote, phrase: "vote", senderId: nodeId}, N);
     }
     // Vote phase: Once N-F votes received, decide or go to next round
@@ -115,10 +107,10 @@ export async function node(
       for (const [key, count] of votes.get(k)!) {
         if (key == "?") continue;
         if (count > F) {
-          // console.log(1)
           state.decided = true;
           state.x = key;
           state.k = k;
+          console.log(`Node ${nodeId} decided x = ${key}`);
           break;
         }
       }
@@ -128,6 +120,13 @@ export async function node(
       // Prepare for next round if not decided
       if (!state.decided) {
         console.log(`next round x = ${result}`)
+        state.k = k + 1;
+        // Garbage collection
+        proposalSenders.get(k)?.clear();
+        voteSenders.get(k)?.clear();
+        proposals.get(k)?.clear();
+        votes.get(k)?.clear();
+
         // Broadcast new round proposal INCLUDING SELF
         await broadcastMessage({k: k + 1, x: result, phrase: "propose", senderId: nodeId}, N);
       }
