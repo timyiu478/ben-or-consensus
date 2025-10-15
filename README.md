@@ -9,11 +9,14 @@ The Ben-Or consensus algorithm is making use of **randomness** to create consens
 Example Configuration:
 
 ```
+?: no init value
 H: Non-Faulty
 F: Faulty
 Nodes:          F F F F H H H H H H
 Init Values:    1 1 1 1 ? 1 0 1 0 1
 ```
+
+Run:
 
 ![assets/example_run.gif](assets/example_run.gif)
 
@@ -65,9 +68,9 @@ Cons:
 ### Assumptions
 
 1. Node Failure Mode: crash-stop start from round 0 
-1. Message sent will eventually be received; No message lost 
+1. Message sent will eventually be received in arbitrary order; No message lost 
 
-### Convention
+### REST API
 
 - Nodes listen to request on the port defined by `BASE_NODE_PORT` + nodeId, which for the basic configuration, means that node #0 will have the port 3000, #1 the port 3001, etc,
 - Nodes always start with an initial state that is provided as a parameter of the `node` function,

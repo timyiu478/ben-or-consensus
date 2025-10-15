@@ -173,7 +173,49 @@ describe("Ben-Or decentralized consensus algorithm", () => {
       }
     });
 
-    test.todo("Hidden test - Finality is reached - Unanimous Agreement - 2 pt");
+    it("Hidden test - Finality is reached - Unanimous Agreement - 2 pt", async () => {
+      const faultyArray = [false, false, false, false, false];
+
+      const initialValues: Value[] = [0, 0, 0, 0, 0];
+
+      const _servers = await launchNetwork(
+        faultyArray.length,
+        faultyArray.filter((el) => el === true).length,
+        initialValues,
+        faultyArray
+      );
+
+      servers.push(..._servers);
+
+      await startConsensus(faultyArray.length);
+
+      const time = new Date().getTime();
+
+      let states = await getNodesState(faultyArray.length);
+
+      while (
+        new Date().getTime() - time < timeLimit &&
+        !reachedFinality(states)
+      ) {
+        await delay(200);
+
+        states = await getNodesState(faultyArray.length);
+      }
+
+      for (let index = 0; index < states.length; index++) {
+        const state = states[index];
+
+        if (faultyArray[index]) {
+          expect(state.decided).toBeNull();
+          expect(state.x).toBeNull();
+          expect(state.k).toBeNull();
+        } else {
+          expect(state.decided).toBeTruthy();
+          expect(state.x).toBe(1);
+          expect(state.k).toBeLessThanOrEqual(2);
+        }
+      }
+    });
 
     it("Finality is reached - Simple Majority - 1 pt", async () => {
       const faultyArray = [false, false, false, false, true];
