@@ -66,7 +66,7 @@ export async function node(
   // **This function processes both remote and self-messages**
   async function handleMessage(msg: { k: number, x: Value, phrase: string, senderId: number }) {
     const {k, x, phrase, senderId} = msg;
-    console.log(`${nodeId} received k:${k}, x:${x}, phrase:${phrase}, senderId:${senderId}`)
+    console.log(`${nodeId} received message = { k:${k}, x:${x}, phrase:${phrase}, senderId:${senderId} }`)
 
     if (state.killed || state.decided || k < state.k!) return;
 
@@ -98,7 +98,7 @@ export async function node(
         if (count > N / 2) { vote = key; break; }
       }
       // Broadcast vote INCLUDING SELF
-      console.log(`Node ${nodeId} is broadcasting vote ${vote}`);
+      console.log(`Node ${nodeId} is broadcasting vote ${vote} in round ${k}`);
       await broadcastMessage({k: k, x: vote, phrase: "vote", senderId: nodeId}, N);
     }
     // Vote phase: Once N-F votes received, decide or go to next round
@@ -110,7 +110,7 @@ export async function node(
           state.decided = true;
           state.x = key;
           state.k = k;
-          console.log(`Node ${nodeId} decided x = ${key}`);
+          console.log(`Node ${nodeId} decided x = ${key} in round ${k}`);
           break;
         }
       }
@@ -119,7 +119,6 @@ export async function node(
       }
       // Prepare for next round if not decided
       if (!state.decided) {
-        console.log(`next round x = ${result}`)
         state.k = k + 1;
         // Garbage collection
         proposalSenders.get(k)?.clear();
