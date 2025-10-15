@@ -1,6 +1,8 @@
 ## The Ben-Or decentralized consensus algorithm
 
-The Ben-Or consensus algorithm is making use of **randomness** to create consensus in a asynchronous network with eventual liveness guarantee.
+The *Ben-Or consensus algorithm* is making use of **randomness** to create consensus in a asynchronous network with eventual liveness guarantee.
+
+This repository contains my TypeScript implementation of the Ben-Or consensus algorithm, designed to run on a single machine. It's for anyone looking to learn more about this algorithm from a hands-on perspective.
 
 ---
 
