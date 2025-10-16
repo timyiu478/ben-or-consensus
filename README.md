@@ -79,3 +79,10 @@ Cons:
 - Nodes communicate through POST HTTP request with the `/message` route which you should implement,
 - Nodes should start the algorithm when they receive a GET HTTP request to the `/start` route,
 - if the `/stop` GET HTTP route is called on a node, it should stop any activity (this is to prevent any errors in the tests),
+
+---
+
+## References
+
+1. Asynchronous Agreement Part Two: Ben-Or's protocol - https://decentralizedthoughts.github.io/2022-03-30-asynchronous-agreement-part-two-ben-ors-protocol/
+1. Lecture CSE2 G20 Randomized consensus - https://courses.cs.washington.edu/courses/cse452/19sp/slides/l13-benor.pdf
